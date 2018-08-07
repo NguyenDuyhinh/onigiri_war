@@ -6,7 +6,7 @@
 
 
     <!-- sample program  -->
-    <node pkg="onigiri_war" type="randomRun.py" name="randomRun" output="screen"/>
+    <node pkg="wp_navigation" type="wp_navigation" name="wp_navigation" output="screen"/>
 
 
 
