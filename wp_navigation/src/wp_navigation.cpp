@@ -16,7 +16,7 @@
 #include <tf/transform_broadcaster.h>
 
 #define GAIN_CHASE -0.01
-#define PNT_START_CHASE 7
+#define PNT_START_CHASE 6
 
 typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseClient;
 
@@ -125,7 +125,7 @@ public:
               // ウェイポイント終わったらSTATE_IDLEにしてその場で回る
               if(m_state == STATE_IDLE) {
                   m_frontspeed = 0.0;
-                  m_turnspeed = -1.0;
+                  m_turnspeed = -2.0;
                }
 
 	       ROS_INFO("NOW %d", m_state);
