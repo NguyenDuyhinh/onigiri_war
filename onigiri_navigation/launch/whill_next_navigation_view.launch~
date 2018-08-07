@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+
+<launch>
+
+  
+  <!-- kobuki model -->
+  <!--
+  <arg name="urdf_file" default="$(find xacro)/xacro.py '$(find fetch_description)/robots/freight.urdf'" />
+  <param name="robot_description" command="$(arg urdf_file)" /> 
+  <node pkg="tf" type="static_transform_publisher" name="base_frame_2_base_camera_link" args="0 0 0 0 0 0 base_link base_camera_link 100" />
+  <node pkg="tf" type="static_transform_publisher" name="base_frame_2_base_camera_optical_frame" args="0 0 0 0 0 0 base_link base_camera_optical_frame 100" />
+  <node pkg="tf" type="static_transform_publisher" name="base_frame_2_estop_link" args="0 0 0 0 0 0 base_link estop_link 100" />
+  <node pkg="tf" type="static_transform_publisher" name="base_frame_2_l_wheel_link" args="0 0 0 0 0 0 base_link l_wheel_link 100" />
+  <node pkg="tf" type="static_transform_publisher" name="base_frame_2_laser_link2" args="0.7 0 0 0 0 0 base_link laser_link 100" />
+  <node pkg="tf" type="static_transform_publisher" name="base_frame_2_r_wheel_link" args="0 0 0 0 0 0 base_link r_wheel_link 100" />
+  -->
+  
+
+  <node pkg="rviz" type="rviz" name="rviz" args="-d $(find whill_next_navigation)/launch/rviz_cfg.rviz" output="screen"/>
+
+</launch>
+
