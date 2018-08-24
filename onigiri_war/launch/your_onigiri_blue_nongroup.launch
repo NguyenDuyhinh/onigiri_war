@@ -44,7 +44,7 @@
   </node>
 
   <!-- wp_navigation program  -->
-  <!--<node pkg="wp_navigation" type="wp_navigation" name="wp_navigation" output="screen"/>-->
+  <node pkg="wp_navigation" type="wp_navigation" name="wp_navigation" output="screen"/>
 
   <!-- End of your space  -->
 </launch>
