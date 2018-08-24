@@ -95,7 +95,7 @@ Visualization Manager:
       Size (Pixels): 3
       Size (m): 0.0500000007
       Style: Flat Squares
-      Topic: /red_bot/scan2
+      Topic: /blue_bot/scan2
       Unreliable: false
       Use Fixed Frame: true
       Use rainbow: true
@@ -117,9 +117,15 @@ Visualization Manager:
         All Enabled: false
         blue_bot/base_link:
           Value: true
+        blue_bot/base_link_scanmatch:
+          Value: true
         blue_bot/laser:
           Value: true
+        blue_bot/laser2:
+          Value: true
         blue_bot/odom:
+          Value: true
+        blue_bot/odom_scanmatch:
           Value: true
         blue_bot/optical_ranging_sensor_left:
           Value: true
@@ -133,15 +139,9 @@ Visualization Manager:
           Value: false
         red_bot/base_link:
           Value: true
-        red_bot/base_link_scanmatch:
-          Value: true
         red_bot/laser:
           Value: true
-        red_bot/laser2:
-          Value: true
         red_bot/odom:
-          Value: true
-        red_bot/odom_scanmatch:
           Value: true
         red_bot/optical_ranging_sensor_left:
           Value: true
@@ -158,9 +158,9 @@ Visualization Manager:
       Show Names: true
       Tree:
         map:
-          red_bot/odom_scanmatch:
-            red_bot/base_link_scanmatch:
-              red_bot/laser2:
+          blue_bot/odom_scanmatch:
+            blue_bot/base_link_scanmatch:
+              blue_bot/laser2:
                 {}
       Update Interval: 0
       Value: true
@@ -268,6 +268,22 @@ Visualization Manager:
       Update Interval: 0
       Value: false
       Visual Enabled: true
+    - Alpha: 1
+      Arrow Length: 0.300000012
+      Axes Length: 0.300000012
+      Axes Radius: 0.00999999978
+      Class: rviz/PoseArray
+      Color: 255; 25; 0
+      Enabled: true
+      Head Length: 0.0700000003
+      Head Radius: 0.0299999993
+      Name: PoseArray
+      Shaft Length: 0.230000004
+      Shaft Radius: 0.00999999978
+      Shape: Arrow (Flat)
+      Topic: /particlecloud
+      Unreliable: false
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48

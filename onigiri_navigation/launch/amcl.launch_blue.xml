@@ -1,6 +1,6 @@
 <launch>
   <arg name="use_map_topic"  default="false"/>
-  <arg name="scan_topic"     default="red_bot/scan2"/>
+  <arg name="scan_topic"     default="blue_bot/scan2"/>
   <!-- <arg name="scan_topic"     default="red_bot/scan"/> -->
   <arg name="initial_pose_x" default="0.00"/>
   <arg name="initial_pose_y" default="0.00"/><!--1.97-->
@@ -40,9 +40,9 @@
     <param name="odom_alpha2"               value="0.2"/>
     <param name="odom_alpha3"               value="0.2"/>
     <param name="odom_alpha4"               value="0.2"/>
-    <param name="odom_frame_id"             value="red_bot/odom_scanmatch"/>
+    <param name="odom_frame_id"             value="blue_bot/odom_scanmatch"/>
     <!-- <param name="odom_frame_id"             value="red_bot/odom"/> -->
-    <param name="base_frame_id"             value="red_bot/base_link_scanmatch"/>
+    <param name="base_frame_id"             value="blue_bot/base_link_scanmatch"/>
     <!-- <param name="base_frame_id"             value="red_bot/base_link"/> -->
 
   </node>

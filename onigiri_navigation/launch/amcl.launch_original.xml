@@ -1,13 +1,12 @@
 <launch>
   <arg name="use_map_topic"  default="false"/>
-  <arg name="scan_topic"     default="red_bot/scan2"/>
-  <!-- <arg name="scan_topic"     default="red_bot/scan"/> -->
+  <arg name="scan_topic"     default="red_bot/scan"/>
   <arg name="initial_pose_x" default="0.00"/>
   <arg name="initial_pose_y" default="0.00"/><!--1.97-->
   <arg name="initial_pose_a" default="0.00"/>
 
   <node pkg="amcl" type="amcl" name="amcl">
-
+  
     <param name="min_particles"             value="500"/>
     <param name="max_particles"             value="3000"/>
     <param name="kld_err"                   value="0.05"/>
@@ -40,10 +39,8 @@
     <param name="odom_alpha2"               value="0.2"/>
     <param name="odom_alpha3"               value="0.2"/>
     <param name="odom_alpha4"               value="0.2"/>
-    <param name="odom_frame_id"             value="red_bot/odom_scanmatch"/>
-    <!-- <param name="odom_frame_id"             value="red_bot/odom"/> -->
-    <param name="base_frame_id"             value="red_bot/base_link_scanmatch"/>
-    <!-- <param name="base_frame_id"             value="red_bot/base_link"/> -->
+    <param name="odom_frame_id"             value="red_bot/odom"/>
+    <param name="base_frame_id"             value="red_bot/base_link"/>
 
   </node>
 </launch>

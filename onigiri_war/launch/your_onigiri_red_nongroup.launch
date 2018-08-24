@@ -1,14 +1,7 @@
 <?xml version="1.0"?>
-
 <launch>
-
-  <!-- robot model -->
-  <!--<arg name="urdf_file" default="$(find xacro)/xacro.py '$(find whill_next_description)/urdf/robot.urdf.xacro'" />
-  <param name="robot_description" command="$(arg urdf_file)" /> -->
-
-  <!-- tf -->
-  <!--<node pkg="tf" type="static_transform_publisher" name="base_frame_2_laser_link" args="0.0 0 0 3.14 0 0 red_bot/base_link red_bot/laser 100" />-->
-
+    <!-- You can change control program  -->
+  
   <!-- Map server -->
   <arg name="map_file" default="$(find onigiri_navigation)/maps/map.yaml"/>
   <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)">
@@ -33,6 +26,7 @@
     <remap from="cmd_vel" to="$(arg cmd_vel_topic)"/>
     <remap from="odom" to="$(arg odom_topic)"/>
   </node>
+  
   <!-- LRFのスキャンマッチングでオドメトリ値を出すための処理 -->
   <node pkg="tf2_ros" type="static_transform_publisher" args="0 0 0 3.1415 0 0 red_bot/base_link_scanmatch /red_bot/laser2" name="tf_scanmatch"/>
   <node pkg="onigiri_navigation" type="copy_scan.py" name="copy_scan"/>
@@ -47,5 +41,10 @@
     <!-- <param name="base_frame" value="red_bot/odom"/> -->
     <param name="max_iterations" value="10"/>
   </node>
+
+  <!-- wp_navigation program  -->
+  <node pkg="wp_navigation" type="wp_navigation" name="wp_navigation" output="screen"/>
+
+  <!-- End of your space  -->
 </launch>
 
