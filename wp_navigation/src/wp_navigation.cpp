@@ -16,7 +16,7 @@
 #include <tf/transform_broadcaster.h>
 
 #define GAIN_CHASE -0.01
-#define PNT_START_CHASE 6
+#define PNT_START_CHASE 10
 
 typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseClient;
 
@@ -24,16 +24,26 @@ struct MyPose {
   double x;
   double y;
   double yaw;
+  bool is_checkpoint;
+  double time;
 };
 
 MyPose way_point[] = {
-    { 1.30, 0.00, 0.00},
-    { 1.30, 0.00, 0.75}, // { 1.3,  0.0, -0.75}
-    { 2.10, 0.95, 0.75}, // { 2.1, -0.910, -0.75}
-    { 2.10, 0.95,-0.75}, // { 2.1, -0.910, 0.75}
-    { 3.40,-0.60,-0.75}, // { 2.7, -0.30,   0.75} //{ 3.0,  0.0,   0.75}
-    { 3.40,-0.60, 0.75}, 
-    { 4.00, 0.00,  -3.14},	
+    { 1.58, 0.00, 0.00, true, 2.0},
+    { 1.30, 0.00,-0.79, false, 0.0}, // { 1.3,  0.0, -0.75}
+    { 2.00,-0.80,-0.79, false, 0.0}, // { 2.1, -0.75, -0.75}
+    { 2.00,-0.80, 0.00, false, 0.0}, // { 2.1, -0.75, 0.75}
+    { 2.40,-0.76, 0.00, false, 0.0}, // { 2.7, -0.30,   0.75} //    { 3.0,  0.0,   0.75}
+    { 2.40,-0.76, 3.14, false, 0.0}, 
+    { 1.65,-0.76, 3.14, false, 0.0},
+    { 1.65,-0.76, 0.00, false, 0.0},
+    { 2.15,-0.76, 0.00, false, 0.0}, 
+    { 2.15,-0.76, 1.56, false, 0.0},
+    { 2.00,-0.50, 1.56, true, 1.5},
+    { 2.00,-0.76, 0.79, false, 0.0},
+    { 2.90, 0.15, 0.79, false, 0.0},
+    { 2.90, 0.15,-3.14, false, 0.0},
+    { 2.52, 0.15,-3.14, true, 7.0},
     {999, 999, 999}};
 
 static const std::string OPENCV_WINDOW = "Image window";
@@ -46,6 +56,7 @@ private:
 		STATE_IDLE     = 0,
 		STATE_WAYPOINT = 1,
 		STATE_CHASE    = 2,
+                STATE_BACK     = 3,
 	};
 
 public:
@@ -122,22 +133,50 @@ public:
 	       }*/
              }
 
-              // ウェイポイント終わったらSTATE_IDLEにしてその場で回る
-              if(m_state == STATE_IDLE) {
-                  m_frontspeed = 0.0;
-                  m_turnspeed = -2.0;
-               }
+             if (m_state == STATE_BACK)
+             {
+                ros::Duration tick = ros::Time::now() - time_back;
+                double tickdbl = tick.toSec();
+                if (tickdbl <= way_point[m_destPnt-1].time )
+                {
+                   m_frontspeed = -0.2;
+                   m_turnspeed = 0.0;
+                }
+                else if (tickdbl > way_point[m_destPnt-1].time )
+                {
+                   m_frontspeed = 0.0;
+                   m_frontspeed = 0.0;
+                   m_state = STATE_WAYPOINT;
+                }
+             }
 
-	       ROS_INFO("NOW %d", m_state);
-	       ROS_INFO("diff %f", m_diffPos);
+             // ウェイポイント終わったらSTATE_IDLEにしてその場で回る
+             if(m_state == STATE_IDLE) {
+                 ros::Duration tick = ros::Time::now() - time_idle;
+                 double tickdbl = tick.toSec();
+                 if (tickdbl <= 1.0 ){
+                    m_frontspeed = 0.0;
+                    m_turnspeed = -2.0;
+                 }else if (tickdbl <= 3.0 ){
+                    m_frontspeed = 0.0;
+                    m_turnspeed =  2.0;  
+                 }else if (tickdbl <= 5.0 ){
+                    m_frontspeed = 0.0;
+                    m_turnspeed = -2.0;  
+                 }else{time_idle = ros::Time::now() - ros::Duration(1.0);}
+ 
+             }
 
-	       //ROS速度データに内部関数値を代入
-	       if( m_state == STATE_CHASE || m_state == STATE_IDLE ){
-                  twist.linear.x = m_frontspeed;
-                  twist.angular.z = m_turnspeed;
-                  twist_pub_.publish(twist);
-               }
-	     }
+	     ROS_INFO("NOW %d", m_state);
+	     ROS_INFO("diff %f", m_diffPos);
+
+	     //ROS速度データに内部関数値を代入
+	     if( m_state == STATE_CHASE || m_state == STATE_IDLE || m_state == STATE_BACK){
+                twist.linear.x = m_frontspeed;
+                twist.angular.z = m_turnspeed;
+                twist_pub_.publish(twist);
+             }
+        }
 
 	void checkWaypoint()
 	{
@@ -154,17 +193,37 @@ public:
                 // 到着済みなら次の点を送信する
 	        m_isSent = false;
 	        ROS_INFO("WP Reached: No.%d (%s)",m_destPnt+1, state.toString().c_str());
-                ros::Duration(1.0).sleep();
-	        sendWaypoint(++m_destPnt);
-	      }else {
+
+                if(state == actionlib::SimpleClientGoalState::ABORTED)
+                {
+                
+                   ROS_INFO("NO MORE WAYPOINT!!!");
+                   m_state = STATE_IDLE;
+                   time_idle = ros::Time::now();
+                }
+                else
+                {
+                   time_back = ros::Time::now();
+                   ros::Duration(0.5).sleep();
+
+                   if( way_point[m_destPnt].is_checkpoint )
+                   {
+                       ROS_INFO("BACK START");
+                       m_state = STATE_BACK;
+                   }
+                   ++m_destPnt;
+                 }
+
+                //ros::Duration(1.0).sleep();
+	        //sendWaypoint(++m_destPnt);
+	      
+              }else {
                 // 到着してないなら何もしない
 	        ROS_INFO("WP not reached: No.%d (%s)",m_destPnt+1, state.toString().c_str());
 	      }
 	   } else {
            // ウェイポイント送信済みでない場合
 	     if( m_state == STATE_WAYPOINT ){
-                // STATE_WAYPOINTのときウェイポイント送信(初回時やSTATE_CHASEから復帰時)
-                // STATE_CHASE, STATE_IDLEでは何もしない)
 	        sendWaypoint(m_destPnt);
 	     }
 	   }
@@ -184,6 +243,7 @@ public:
          // 最終ウェイポイントに達したらSTATE_IDLEに遷移して抜ける。
          if (goal.target_pose.pose.position.x == 999) {
             m_state = STATE_IDLE;
+            time_idle = ros::Time::now();
             return;
          }
 
@@ -216,9 +276,10 @@ public:
 
        void imageCb(const sensor_msgs::ImageConstPtr& msg)
        {
-	    const int centerpnt = 320;
+	    const int centerpnt = 200;
             const int range = 10;
             static EState laststate = m_state;
+            double area_min =0;
 
 	    cv_bridge::CvImagePtr cv_ptr;
 	    try
@@ -243,8 +304,11 @@ public:
 	    int y = mu.m01/mu.m00;
             ROS_INFO("AREA = %f", area);
 
+            if(m_destPnt >= PNT_START_CHASE){area_min = 20000;}
+            else{area_min = 200000;}
+
             // 敵が見つかったら追跡する
-	    if( (x >= 0) && (x <= 640) && (area > 20000) && (m_destPnt >= PNT_START_CHASE)){
+	    if( (x >= 0) && (x <= 400) && (area > area_min) ){
       		m_diffPos = x - centerpnt;
 
                 // STATE_CHASEに入る前の状態を保存
@@ -308,6 +372,8 @@ public:
 		double m_frontspeed;
 		double m_turnspeed;
                 ros::Time m_timechasestr;
+                ros::Time time_back;
+                ros::Time time_idle;
 
 
 		// ウェイポイント制御用
