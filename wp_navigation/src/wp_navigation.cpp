@@ -16,7 +16,7 @@
 #include <tf/transform_broadcaster.h>
 
 #define GAIN_CHASE -0.01
-#define PNT_START_CHASE 10
+#define PNT_START_CHASE 13
 
 typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseClient;
 
@@ -305,7 +305,7 @@ public:
             ROS_INFO("AREA = %f", area);
 
             if(m_destPnt >= PNT_START_CHASE){area_min = 20000;}
-            else{area_min = 200000;}
+            else{area_min = 250000;}
 
             // 敵が見つかったら追跡する
 	    if( (x >= 0) && (x <= 400) && (area > area_min) ){
